@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agente interno de crédito — Banco Demo (Panamá)</title>
+<meta name="description" content="Demo de agente interno de crédito para colaboradores de banco: procesos, tasas, requerimientos y niveles de aprobación.">
+<meta name="robots" content="noindex">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#0B1220; --brand:#0F5132; --brand2:#157347; }
+  body { font-family:'Inter',system-ui,sans-serif; background:#F4F6F8; color:var(--ink); }
+  .app { max-width:1080px; margin:0 auto; }
+  .rail { background:#0B1220; }
+  .bubble-bot { background:#fff; border:1px solid #E3E8EF; border-radius:14px; border-bottom-left-radius:4px; }
+  .bubble-user { background:var(--brand); color:#fff; border-radius:14px; border-bottom-right-radius:4px; }
+  .chip { border:1px solid #D8DEE7; background:#fff; border-radius:999px; font-size:12.5px; padding:6px 12px; }
+  .chip:hover { border-color:var(--brand); color:var(--brand); }
+  .chat-p { margin:0 0 .4rem; line-height:1.6; } .chat-p:last-child{ margin-bottom:0; }
+  .chat-ul { margin:.25rem 0 .5rem; padding-left:1.1rem; list-style:disc; }
+  .chat-ul li { margin:.2rem 0; line-height:1.55; }
+  .typing span { width:6px;height:6px;border-radius:50%;background:#94A3B8;display:inline-block;animation:blink 1.2s infinite; }
+  .typing span:nth-child(2){animation-delay:.2s} .typing span:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+  .scroll::-webkit-scrollbar{width:9px} .scroll::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:9px}
+</style>
+</head>
+<body class="min-h-screen">
+
+<div class="app px-4 sm:px-6 py-6">
+
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+    <div>
+      <p class="text-[11px] font-bold uppercase tracking-[.15em] text-[#157347]">Banco Demo · Panamá · Uso interno</p>
+      <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mt-1">Agente interno de crédito</h1>
+      <p class="text-sm text-[#475467] mt-1">Consulta procesos, tasas y requerimientos como lo haría un colaborador del banco.</p>
+    </div>
+    <div class="flex items-center gap-2 text-[12px]">
+      <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">Hipotecario</span>
+      <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">PYME</span>
+      <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">Consumo</span>
+    </div>
+  </header>
+
+  <div class="grid lg:grid-cols-[1fr_300px] gap-4 items-start">
+
+    <!-- CHAT -->
+    <section class="bg-white rounded-2xl border border-[#E3E8EF] shadow-sm overflow-hidden flex flex-col" style="height:min(72vh,640px)">
+      <div class="flex items-center gap-3 px-4 py-3 border-b border-[#EEF1F6] bg-[#FAFBFC]">
+        <div class="w-9 h-9 rounded-full grid place-items-center text-white font-extrabold text-sm" style="background:linear-gradient(135deg,var(--brand),var(--brand2))">RC</div>
+        <div class="leading-tight">
+          <p class="font-bold text-[13.5px]">Asistente de Riesgo y Crédito</p>
+          <p class="text-[11.5px] text-emerald-600 font-semibold"><span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 align-middle"></span>Base vigente Q4 2026</p>
+        </div>
+      </div>
+
+      <div id="log" class="scroll flex-1 overflow-y-auto px-4 py-5 space-y-4"></div>
+
+      <form id="form" class="flex items-end gap-2 p-3 border-t border-[#EEF1F6] bg-[#FAFBFC]">
+        <textarea id="input" rows="1" placeholder="Pregunta sobre un producto, un monto o un requisito…"
+          class="flex-1 resize-none border border-[#D8DEE7] rounded-xl px-4 py-3 text-[14px] max-h-32 focus:outline-none focus:border-[#157347]"
+          style="min-height:2.9rem;line-height:1.5"></textarea>
+        <button type="submit" class="text-white font-bold px-5 py-3 rounded-xl text-sm" style="background:var(--brand)">Enviar</button>
+      </form>
+    </section>
+
+    <!-- PANEL LATERAL -->
+    <aside class="space-y-3">
+      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
+        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">Prueba con un caso</p>
+        <div class="flex flex-wrap gap-2" id="chips">
+          <button class="chip" type="button">Cliente gana 1,500, ¿cuánto hipotecario?</button>
+          <button class="chip" type="button">Independiente con 18 meses, ¿aplica?</button>
+          <button class="chip" type="button">PYME: línea de 250k, ¿documentos y tasa?</button>
+          <button class="chip" type="button">¿Quién aprueba un hipotecario de 300k?</button>
+          <button class="chip" type="button">¿Puedo pagar la prima con otro préstamo?</button>
+          <button class="chip" type="button">Tasa de libor a 180 días</button>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4 text-[12.5px] text-[#475467] leading-relaxed">
+        <p class="font-bold text-[#0B1220] text-[13px] mb-1.5">Qué mirar en la demo</p>
+        <ul class="space-y-1.5 list-disc pl-4">
+          <li>Da el número y también la regla que lo respalda.</li>
+          <li>Avisa cuando el monto obliga a pasar por comité.</li>
+          <li>Si no está en su base, lo dice y escala. No inventa.</li>
+          <li>No aprueba: informa criterios.</li>
+        </ul>
+      </div>
+      <p class="text-[11px] text-[#8A94A6] px-1">Demo con datos ficticios. Banco, tasas y productos no representan la oferta de ninguna institución.</p>
+    </aside>
+  </div>
+</div>
+
+<script>
+const ENDPOINT = 'https://yllbwunwnkyspthqpbrj.supabase.co/functions/v1/agente-chat-banco';
+const ORIGEN = 'interno_banco:' + location.pathname;
+const history = [];
+const log = document.getElementById('log');
+const form = document.getElementById('form');
+const input = document.getElementById('input');
+
+const GREETING = 'Hola. Soy el asistente interno de Riesgo y Crédito. Puedes preguntarme por tasas, documentos, plazos o por quién aprueba un monto. Manejo hipotecario, consumo, auto y PYME. ¿Qué caso tienes?';
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(raw){
+  const lines = esc(raw).split(/\n/); let html=''; let inList=false;
+  const inline = t => t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  for (const ln of lines) {
+    const t = ln.trim();
+    const b = /^[-•*]\s+(.*)$/.exec(t);
+    if (b) { if(!inList){html+='<ul class="chat-ul">';inList=true;} html+='<li>'+inline(b[1])+'</li>'; continue; }
+    if (inList) { html+='</ul>'; inList=false; }
+    if (t === '') continue;
+    html += '<p class="chat-p">'+inline(t)+'</p>';
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function addBubble(role, text) {
+  const row = document.createElement('div');
+  row.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+  const b = document.createElement('div');
+  b.className = (role === 'user' ? 'bubble-user' : 'bubble-bot') + ' px-4 py-2.5 text-[13.5px] max-w-[86%]';
+  b.innerHTML = role === 'user' ? esc(text) : fmt(text);
+  row.appendChild(b);
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+  return b;
+}
+
+function addTyping() {
+  const row = document.createElement('div');
+  row.className = 'flex justify-start';
+  row.innerHTML = '<div class="bubble-bot px-4 py-3"><span class="typing"><span></span><span></span><span></span></span></div>';
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+  return row;
+}
+
+async function send(text) {
+  const q = text.trim();
+  if (!q) return;
+  addBubble('user', q);
+  history.push({ role: 'user', content: q });
+  input.value = '';
+  input.style.height = 'auto';
+  const typing = addTyping();
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history, origen: ORIGEN }),
+    });
+    const data = await res.json();
+    typing.remove();
+    const reply = data?.content || 'No pude responder. Intenta de nuevo.';
+    history.push({ role: 'assistant', content: reply });
+    addBubble('bot', reply);
+  } catch (e) {
+    typing.remove();
+    addBubble('bot', 'Tuve un problema de conexión. Intenta otra vez.');
+  }
+}
+
+form.addEventListener('submit', (e) => { e.preventDefault(); send(input.value); });
+input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 128) + 'px'; });
+input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input.value); } });
+document.querySelectorAll('#chips .chip').forEach(btn => btn.addEventListener('click', () => send(btn.textContent)));
+
+addBubble('bot', GREETING);
+input.focus();
+</script>
+</body>
+</html>
