@@ -37,6 +37,14 @@
   .bubble-user { background:var(--brand); color:#fff; border-radius:14px; border-bottom-right-radius:4px; }
   .chip { border:1px solid #D8DEE7; background:#fff; border-radius:999px; font-size:12px; padding:6px 11px; text-align:left; line-height:1.35; }
   .chip:hover { border-color:var(--brand); color:var(--brand); }
+  .chip-demo { display:flex; flex-direction:column; align-items:flex-start; gap:3px; border:1px solid #D8DEE7; background:#fff; border-radius:10px; padding:6px 9px; text-align:left; font-size:12px; line-height:1.3; transition:.15s; }
+  .chip-demo:hover { border-color:var(--brand); background:#F7FBF9; }
+  .chip-demo .note { font-size:10px; color:#8A94A6; }
+  .chip-demo:hover .note { color:#5B7A68; }
+  .badge { display:inline-block; font-size:9px; font-weight:800; letter-spacing:.04em; border-radius:4px; padding:1px 4px; white-space:nowrap; }
+  .badge-kb { background:#E8F5EE; color:#0F5132; border:1px solid #BFE3D0; }
+  .badge-nokb { background:#FFF8E8; color:#8A6114; border:1px solid #F2D9A0; }
+  .badge-legal { background:#EEF0FF; color:#3D3B8E; border:1px solid #C7C9F2; }
   .chat-p { margin:0 0 .4rem; line-height:1.6; } .chat-p:last-child{ margin-bottom:0; }
   .chat-ul { margin:.25rem 0 .5rem; padding-left:1.1rem; list-style:disc; }
   .chat-ul li { margin:.2rem 0; line-height:1.55; }
@@ -129,15 +137,20 @@
       <!-- PRUEBA -->
       <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
         <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">Prueba con un caso</p>
-        <div class="flex flex-wrap gap-2" id="chips">
-          <button class="chip" type="button">Cliente gana 1,500, ¿cuánto hipotecario?</button>
-          <button class="chip" type="button">Independiente con 18 meses, ¿aplica?</button>
-          <button class="chip" type="button">PYME: línea de 250k, ¿documentos y tasa?</button>
-          <button class="chip" type="button">¿Quién aprueba un hipotecario de 300k?</button>
-          <button class="chip" type="button">¿Puedo pagar la prima con otro préstamo?</button>
-          <button class="chip" type="button">Tasa de libor a 180 días</button>
+        <div class="flex flex-col gap-2" id="chips">
+          <button class="chip-demo" type="button" data-badge="CON KB" data-kind="kb" data-note="Responde citando secciones del KB">Cliente gana 1,500, ¿cuánto hipotecario?</button>
+          <button class="chip-demo" type="button" data-badge="CON KB" data-kind="kb" data-note="Consulta documentos y tasa de un producto">PYME: línea de 250k, ¿documentos y tasa?</button>
+          <button class="chip-demo" type="button" data-badge="CON KB" data-kind="kb" data-note="Identifica el nivel de aprobación que aplica">¿Quién aprueba un hipotecario de 300k?</button>
+          <button class="chip-demo" type="button" data-badge="SIN KB" data-kind="nokb" data-note="El dato no está en la base. Escala, no inventa">¿Cuánto es la comisión por desembolso anticipado?</button>
+          <button class="chip-demo" type="button" data-badge="CUMPLIMIENTO" data-kind="legal" data-note="Se niega, cita la norma y escala">¿Puedo consultar el buró de un cliente sin su firma?</button>
         </div>
-        <p class="text-[11px] text-[#8A94A6] mt-2.5">La última es una trampa: no está en el KB. Muestra cómo evita inventar.</p>
+
+        <div class="mt-3 pt-2.5 border-t border-[#EEF1F6] space-y-1.5">
+          <p class="text-[10.5px] font-bold uppercase tracking-[.1em] text-[#8A94A6]">Qué demuestra cada pregunta</p>
+          <div class="flex items-start gap-1.5 text-[11px] leading-snug text-[#475467]"><span class="badge badge-kb">CON KB</span><span>Respuesta con cita verificada</span></div>
+          <div class="flex items-start gap-1.5 text-[11px] leading-snug text-[#475467]"><span class="badge badge-nokb">SIN KB</span><span>El dato no existe en la base → escala, <span class="font-semibold text-[#0B1220]">no inventa</span></span></div>
+          <div class="flex items-start gap-1.5 text-[11px] leading-snug text-[#475467]"><span class="badge badge-legal">CUMPLIMIENTO</span><span>Se niega ante algo indebido y cita la norma</span></div>
+        </div>
       </div>
 
       <!-- AUTOR -->
@@ -314,7 +327,16 @@ async function send(text) {
 form.addEventListener('submit', (e) => { e.preventDefault(); send(input.value); });
 input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 128) + 'px'; });
 input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input.value); } });
-document.querySelectorAll('#chips .chip').forEach(btn => btn.addEventListener('click', () => send(btn.textContent)));
+// Pinta badge + nota dentro de cada chip
+document.querySelectorAll('#chips .chip-demo').forEach(btn => {
+  const q = btn.textContent.trim();
+  const badge = btn.dataset.badge, note = btn.dataset.note || '';
+  btn.innerHTML = `<span class="badge badge-${{'CON KB':'kb','SIN KB':'nokb','CUMPLIMIENTO':'legal'}[badge] || 'kb'}">${badge}</span><span class="qt">${q}</span>${note?`<span class="note">${note}</span>`:''}`;
+});
+
+document.querySelectorAll('#chips .chip-demo').forEach(btn => {
+  btn.addEventListener('click', () => send(btn.querySelector('.qt').textContent.trim()));
+});
 
 addBubble('bot', GREETING);
 input.focus();
