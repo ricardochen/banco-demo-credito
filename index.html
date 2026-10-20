@@ -159,6 +159,14 @@
     </div>
     <h1 class="text-2xl sm:text-[34px] font-extrabold leading-tight mt-1">El asistente de crédito de tu equipo bancario</h1>
     <p class="text-[14px] sm:text-[15px] text-[#475467] mt-1.5">Responde cualquier consulta de crédito en segundos. Y te dice de dónde salió cada número.</p>
+    <div class="flex flex-wrap items-center gap-3 mt-4">
+      <a href="#chat-step" id="hero-cta"
+         class="inline-flex items-center justify-center gap-2 bg-[#0F5132] hover:bg-[#157347] text-white font-extrabold text-[13.5px] rounded-xl px-5 py-2.5 transition shadow-sm">
+        Pruébalo tú mismo
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+      </a>
+      <span class="text-[12px] text-[#8A94A6]">Sin registro. Pregunta lo que quieras.</span>
+    </div>
   </header>
 
   <!-- 1. PROBLEMA QUE RESUELVE -->
@@ -297,7 +305,6 @@
     <div class="border-t border-white/10 px-7 sm:px-10 pt-5 pb-9 flex flex-col sm:flex-row sm:flex-wrap items-center gap-x-4 gap-y-2">
       <p class="text-[11px] font-bold text-white">Ricardo Chen</p>
       <p class="text-[11px] text-[#7E96B4]">Consultoría e implementación de IA para empresas</p>
-      <p class="text-[11px] text-[#7E96B4]">Cofundador &amp; CTO, Wisy</p>
       <p class="text-[11px] text-[#56CCA8] italic">“Primero lo mapeas, después lo automatizas.”</p>
     </div>
   </div>
@@ -616,6 +623,12 @@ function beginLeadFromAnywhere() {
   document.querySelector('.chat-panel')?.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 document.getElementById('cta-start').addEventListener('click', beginLeadFromAnywhere);
+
+document.getElementById('hero-cta').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('chat-step')?.scrollIntoView({ behavior:'smooth', block:'start' });
+  setTimeout(() => { if (!isMobile()) input.focus({ preventScroll:true }); }, 650);
+});
 
 
 /* -------------------------------------------- */
