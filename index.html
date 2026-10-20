@@ -111,7 +111,29 @@
   .ba-ico-good { background:#DCF3E6; color:#0F5132; }
   .ba-vs { font-size:16px; color:#08131F; background:#56CCA8; border:1px solid #56CCA8; width:30px; height:30px; border-radius:999px; display:grid; place-items:center; font-weight:800; }
   .chat-panel { height: 62vh; min-height: 420px; max-height: 620px; }
-  @media (max-width: 1023px) { .chat-panel { height: 62vh; min-height: 380px; max-height: none; width:100%; } }
+  @media (max-width: 1023px) { .chat-panel { height: 58vh; min-height: 360px; max-height: none; width:100%; } }
+
+  /* ---- Modo inmersivo del chat en móvil ----
+     Al tocar el input, el chat se aísla a pantalla completa para que el teclado
+     virtual no lo tape ni compita con el resto de la página. */
+  @media (max-width: 1023px) {
+    body.chat-immersive { overflow:hidden; }
+    body.chat-immersive .app > *:not(#chat-step) { display:none !important; }
+    body.chat-immersive #chat-step {
+      position:fixed; inset:0; z-index:9999; margin:0; padding:0;
+      background:#fff; display:flex; flex-direction:column;
+      height:100dvh; max-height:100dvh; overflow:hidden;
+    }
+    body.chat-immersive #chat-step .step-block { border-radius:0; border:0; padding:0; margin:0; height:100%; display:flex; flex-direction:column; }
+    body.chat-immersive #chat-step .step-head { display:none; }
+    body.chat-immersive .chat-panel {
+      height:auto; flex:1 1 auto; min-height:0; max-height:none; margin:0 !important;
+      border-radius:0; border:0; box-shadow:none;
+    }
+    body.chat-immersive #chat-close { display:flex; }
+    body.chat-immersive #log { max-height:none; }
+  }
+  #chat-close { display:none; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#3D5A78; background:#fff; border:1px solid #D8DEE7; border-radius:999px; padding:5px 11px; }
   .pulse { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
 </style>
@@ -200,7 +222,7 @@
   </section>
 
   <!-- 3. CHAT -->
-  <section class="step-block step-3">
+  <section class="step-block step-3" id="chat-step">
     <div class="step-head">
       <span class="step-num">3</span>
       <div>
@@ -220,6 +242,10 @@
               </div>
             </div>
             <span class="hidden sm:inline text-[10.5px] font-bold text-[#64748B] bg-white border border-[#E3E8EF] rounded-full px-2.5 py-1 self-center">RAG · KB propio</span>
+            <button id="chat-close" type="button" aria-label="Salir del chat">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              Salir
+            </button>
           </div>
 
           <div id="log" class="scroll flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-3.5" style="min-height:300px"></div>
@@ -411,6 +437,30 @@ async function send(text) {
   }
 }
 
+/* ---- Modo inmersivo del chat en móvil ---- */
+const isMobile = () => window.matchMedia('(max-width:1023px)').matches;
+const chatClose = document.getElementById('chat-close');
+
+function enterImmersive() {
+  if (!isMobile() || document.body.classList.contains('chat-immersive')) return;
+  document.body.classList.add('chat-immersive');
+  // deja que el layout se aplique antes de medir
+  requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
+}
+
+function exitImmersive() {
+  if (!document.body.classList.contains('chat-immersive')) return;
+  document.body.classList.remove('chat-immersive');
+}
+
+chatClose.addEventListener('click', () => { input.blur(); exitImmersive(); });
+input.addEventListener('focus', enterImmersive);
+input.addEventListener('click', enterImmersive);
+document.querySelector('#chat-step .chat-panel').addEventListener('touchstart', enterImmersive, { passive:true });
+
+// Si gira a horizontal o crece la pantalla, sale del modo inmersivo
+window.addEventListener('resize', () => { if (!isMobile()) exitImmersive(); });
+
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   if (leadMode) { const v = input.value; input.value=''; input.style.height='auto'; addBubble('user', v); handleLeadInput(v); }
@@ -459,7 +509,7 @@ function startLead() {
   leadData = { nombre:'', empresa:'', contacto:'', contexto:'' };
   input.placeholder = 'Escribe tu nombre…';
   addBubble('bot', LEAD_PROMPTS[0]);
-  input.focus();
+  if (window.matchMedia('(min-width:1024px)').matches) input.focus();
 }
 
 async function sendLead() {
@@ -547,7 +597,6 @@ document.getElementById('cta-start').addEventListener('click', beginLeadFromAnyw
 /* -------------------------------------------- */
 
 addBubble('bot', GREETING);
-input.focus();
 </script>
 </body>
 </html>
