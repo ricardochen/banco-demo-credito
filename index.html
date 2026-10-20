@@ -209,7 +209,7 @@
         </p>
         <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3">
           <p class="text-[11px] text-[#7E96B4]">✓ Sin formularios externos</p>
-          <p class="text-[11px] text-[#7E96B4]">✓ Llega directo a su Telegram</p>
+          <p class="text-[11px] text-[#7E96B4]">✓ Llega directo a Ricardo, sin intermediarios</p>
           <p class="text-[11px] text-[#7E96B4]">✓ Respuesta en menos de 24 h</p>
         </div>
       </div>
@@ -438,10 +438,10 @@ async function sendLead() {
     const nombre = leadData.nombre.split(' ')[0];
     leadMode = false; leadStep = 0;
     input.placeholder = 'Pregunta sobre un producto, un monto o un requisito…';
-    addBubble('bot', `Listo, ${nombre}. Tus datos ya llegaron a Ricardo y te escribe en menos de 24 horas hábiles.\n\nMientras tanto puedes seguir probando el asistente.`);
+    addBubble("bot", `Listo, ${nombre}. Tus datos ya llegaron a Ricardo.\n\nMientras tanto puedes seguir probando el asistente.`);
     const row = document.createElement('div');
     row.className = 'flex justify-start';
-    row.innerHTML = '<div class="escalate">✅ Enviado directo al Telegram de Ricardo.</div>';
+    row.innerHTML = '<div class="escalate">✅ Datos enviados. Ricardo te escribe en menos de 24 horas hábiles.</div>';
     log.appendChild(row);
     scrollDown();
   } catch (e) {
