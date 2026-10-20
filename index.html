@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Asistente de crédito bancario — Demo</title>
 <meta name="description" content="Un asistente que responde a colaboradores de banco sobre procesos, tasas y niveles de aprobación en segundos, con la regla que respalda cada número. Demo funcional, datos ficticios.">
 <meta name="robots" content="index, follow">
@@ -133,6 +133,13 @@
     body.chat-immersive #chat-close { display:flex; }
     body.chat-immersive #log { max-height:none; }
   }
+  /* iOS hace zoom al enfocar campos con font-size < 16px. Esto lo evita. */
+  .field-16 { font-size:16px; }
+  #input::placeholder { font-size:13.5px; color:#98A2B3; }
+  textarea#input { overflow-x:hidden; }
+  /* Alto real cuando el teclado está abierto (lo ajusta JS con visualViewport) */
+  body.kb-open #chat-step { height: var(--vvh, 100dvh) !important; max-height: var(--vvh, 100dvh) !important; }
+  body.kb-open .chat-panel { padding-bottom:0; }
   #chat-close { display:none; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#3D5A78; background:#fff; border:1px solid #D8DEE7; border-radius:999px; padding:5px 11px; }
   .pulse { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
@@ -251,8 +258,8 @@
           <div id="log" class="scroll flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-3.5" style="min-height:300px"></div>
 
           <form id="form" class="flex items-end gap-2 p-3 border-t border-[#EEF1F6] bg-[#FAFBFC]">
-            <textarea id="input" rows="1" placeholder="Pregunta sobre un producto, un monto o un requisito…"
-              class="flex-1 min-w-0 resize-none border border-[#D8DEE7] rounded-xl px-4 py-3 text-[14px] max-h-32 focus:outline-none focus:border-[#157347]"
+            <textarea id="input" rows="1" placeholder="Pregunta sobre tasas, montos o requisitos…"
+              class="flex-1 min-w-0 resize-none border border-[#D8DEE7] rounded-xl px-3.5 py-3 max-h-32 focus:outline-none focus:border-[#157347] field-16"
               style="min-height:2.9rem;line-height:1.5"></textarea>
             <button type="submit" class="text-white font-bold px-5 py-3 rounded-xl text-sm shrink-0" style="background:var(--brand)">Enviar</button>
           </form>
@@ -460,6 +467,25 @@ document.querySelector('#chat-step .chat-panel').addEventListener('touchstart', 
 
 // Si gira a horizontal o crece la pantalla, sale del modo inmersivo
 window.addEventListener('resize', () => { if (!isMobile()) exitImmersive(); });
+
+/* ---- Seguir el teclado virtual con visualViewport (iOS Safari) ---- */
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const syncViewport = () => {
+    const kb = window.innerHeight - vv.height;
+    const open = kb > 120; // umbral: teclado realmente abierto
+    document.body.classList.toggle('kb-open', open);
+    if (open) {
+      document.documentElement.style.setProperty('--vvh', vv.height + 'px');
+      log.scrollTop = log.scrollHeight;
+    } else {
+      document.documentElement.style.removeProperty('--vvh');
+    }
+  };
+  vv.addEventListener('resize', syncViewport);
+  vv.addEventListener('scroll', syncViewport);
+  syncViewport();
+}
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
