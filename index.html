@@ -37,8 +37,8 @@
   .app, .app * { min-width:0; }
   .bubble-bot, .bubble-user { overflow-wrap:anywhere; word-break:break-word; }
   .srctag, .cite { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
-  .chat-panel, #aside-panel, #log { max-width:100%; }
-  .app { max-width:1180px; margin:0 auto; }
+  .chat-panel, #log { max-width:100%; }
+  .app { max-width:900px; margin:0 auto; }
   .bubble-bot { background:#fff; border:1px solid #E3E8EF; border-radius:14px; border-bottom-left-radius:4px; }
   .bubble-user { background:var(--brand); color:#fff; border-radius:14px; border-bottom-right-radius:4px; }
   .chip { border:1px solid #D8DEE7; background:#fff; border-radius:999px; font-size:12px; padding:6px 11px; text-align:left; line-height:1.35; }
@@ -78,13 +78,9 @@
   .leadform button.cancel { color:#64748B; font-size:12px; font-weight:600; padding:8px 4px; }
   .leadform .err { color:#B42318; font-size:11px; font-weight:600; }
   /* Panel del chat: alto útil en escritorio, sin desperdicio en móvil */
-  .main-grid { display:grid; grid-template-columns:minmax(0,1fr); }
-  @media (min-width:1024px) { .main-grid { grid-template-columns:minmax(0,1fr) 340px; } }
-  .chat-panel { height: 78vh; min-height: 560px; max-height: 820px; }
-  @media (min-width: 1024px) {
-    #aside-panel { height: 78vh; min-height: 560px; max-height: 820px; overflow-y: auto; }
-  }
-  @media (max-width: 1023px) { .chat-panel { height: auto; min-height: 0; max-height: none; width: 100%; } }
+  .step-num { flex-shrink:0; display:grid; place-items:center; width:26px; height:26px; border-radius:999px; background:#0F5132; color:#fff; font-size:12.5px; font-weight:800; }
+  .chat-panel { height: 62vh; min-height: 420px; max-height: 620px; }
+  @media (max-width: 1023px) { .chat-panel { height: 62vh; min-height: 380px; max-height: none; width:100%; } }
   .pulse { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
 </style>
@@ -94,133 +90,87 @@
 <div class="app px-4 sm:px-6 py-6">
 
   <!-- HEADER -->
-  <header class="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 mb-3 sm:mb-5">
-    <div>
-      <p class="text-[11px] font-bold uppercase tracking-[.15em] text-[#157347]">Banco Demo · Panamá · Uso interno</p>
-      <h1 class="text-xl sm:text-3xl font-extrabold leading-tight mt-1">El asistente de crédito de tu equipo bancario</h1>
-      <p class="text-[13px] sm:text-sm text-[#475467] mt-1">Responde cualquier consulta de crédito en segundos. Y te dice de dónde salió cada número.</p>
-    </div>
-    <div class="hidden sm:flex items-center gap-2 text-[12px] shrink-0">
-      <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">Hipotecario</span>
-      <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">PYME</span>
-      <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">Consumo</span>
-    </div>
+  <header class="mb-7">
+    <p class="text-[11px] font-bold uppercase tracking-[.15em] text-[#157347]">Banco Demo · Panamá · Uso interno</p>
+    <h1 class="text-2xl sm:text-[34px] font-extrabold leading-tight mt-1">El asistente de crédito de tu equipo bancario</h1>
+    <p class="text-[14px] sm:text-[15px] text-[#475467] mt-1.5">Responde cualquier consulta de crédito en segundos. Y te dice de dónde salió cada número.</p>
   </header>
 
-  <div class="main-grid gap-4 items-start w-full">
-
-    <!-- CHAT -->
-    <section class="chat-panel bg-white rounded-2xl border border-[#E3E8EF] shadow-sm overflow-hidden flex flex-col">
-      <div class="flex items-center justify-between gap-3 px-4 py-2.5 sm:py-3 border-b border-[#EEF1F6] bg-[#FAFBFC]">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full grid place-items-center text-white font-extrabold text-sm" style="background:linear-gradient(135deg,var(--brand),var(--brand2))">RC</div>
-          <div class="leading-tight">
-            <p class="font-bold text-[13.5px]">Asistente de crédito</p>
-            <p class="text-[11.5px] text-emerald-600 font-semibold"><span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 align-middle"></span>KB v2.0 · vigente Q4 2026</p>
-          </div>
-        </div>
-        <span class="hidden sm:inline text-[10.5px] font-bold text-[#64748B] bg-white border border-[#E3E8EF] rounded-full px-2.5 py-1">RAG sobre KB propio</span>
-      </div>
-
-      <div id="log" class="scroll flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-5 space-y-3.5 sm:space-y-4" style="min-height:220px;max-height:52vh"></div>
-
-      <form id="form" class="flex items-end gap-2 p-3 border-t border-[#EEF1F6] bg-[#FAFBFC]">
-        <textarea id="input" rows="1" placeholder="Pregunta sobre un producto, un monto o un requisito…"
-          class="flex-1 resize-none border border-[#D8DEE7] rounded-xl px-4 py-3 text-[14px] max-h-32 focus:outline-none focus:border-[#157347]"
-          style="min-height:2.9rem;line-height:1.5"></textarea>
-        <button type="submit" class="text-white font-bold px-5 py-3 rounded-xl text-sm" style="background:var(--brand)">Enviar</button>
-      </form>
-    </section>
-
-    <!-- CTA móvil: solo en pantallas pequeñas, justo bajo el chat -->
-    <button id="cta-start-2" type="button"
-      class="lg:hidden w-full inline-flex items-center justify-center gap-2 bg-[#0F5132] hover:bg-[#157347] text-white font-extrabold text-[13.5px] rounded-xl px-5 py-3 mt-3 transition">
-      Deja tus datos aquí — diagnóstico sin costo
-      <svg style="position:relative;top:-1px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </button>
-
-    <!-- PANEL LATERAL -->
-    <aside class="space-y-3 scroll" id="aside-panel">
-
-      <!-- PRUEBA (primero: es lo que engancha) -->
-      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
-        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">Prueba con un caso</p>
-        <div class="flex flex-col gap-2" id="chips">
-          <button class="chip-demo" type="button" data-badge="CON KB" data-kind="kb" data-note="Responde citando secciones del KB">Cliente gana 1,500, ¿cuánto hipotecario?</button>
-          <button class="chip-demo" type="button" data-badge="CON KB" data-kind="kb" data-note="Consulta documentos y tasa de un producto">PYME: línea de 250k, ¿documentos y tasa?</button>
-          <button class="chip-demo" type="button" data-badge="CON KB" data-kind="kb" data-note="Identifica el nivel de aprobación que aplica">¿Quién aprueba un hipotecario de 300k?</button>
-          <button class="chip-demo" type="button" data-badge="SIN KB" data-kind="nokb" data-note="El dato no está en la base. Escala, no inventa">¿Cuánto es la comisión por desembolso anticipado?</button>
-          <button class="chip-demo" type="button" data-badge="CUMPLIMIENTO" data-kind="legal" data-note="Se niega, cita la norma y escala">¿Puedo consultar el buró de un cliente sin su firma?</button>
-        </div>
-
-        <div class="mt-3 pt-2.5 border-t border-[#EEF1F6] space-y-1.5">
-          <p class="text-[10.5px] font-bold uppercase tracking-[.1em] text-[#8A94A6]">Qué demuestra cada pregunta</p>
-          <div class="flex items-start gap-1.5 text-[11px] leading-snug text-[#475467]"><span class="badge badge-kb">CON KB</span><span>Respuesta con cita verificada</span></div>
-          <div class="flex items-start gap-1.5 text-[11px] leading-snug text-[#475467]"><span class="badge badge-nokb">SIN KB</span><span>El dato no existe en la base → escala, <span class="font-semibold text-[#0B1220]">no inventa</span></span></div>
-          <div class="flex items-start gap-1.5 text-[11px] leading-snug text-[#475467]"><span class="badge badge-legal">CUMPLIMIENTO</span><span>Se niega ante algo indebido y cita la norma</span></div>
-        </div>
-      </div>
-
-      <!-- PIPELINE RAG -->
-      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
-        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2.5">Cómo responde</p>
-        <div class="pipeline" id="pipeline">
-          <span class="step" data-step="q">1 Pregunta</span>
-          <span class="arrow">→</span>
-          <span class="step" data-step="r">2 Busca en KB</span>
-          <span class="arrow">→</span>
-          <span class="step" data-step="g">3 Genera</span>
-          <span class="arrow">→</span>
-          <span class="step" data-step="v">4 Verifica</span>
-        </div>
-        <p class="text-[12px] text-[#475467] leading-relaxed mt-2.5">
-          Cada respuesta cita la sección del KB de donde sale el dato. Si el dato no está, el asistente lo dice y escala — <span class="font-semibold text-[#0B1220]">no lo inventa</span>.
+  <!-- 1. PROBLEMA QUE RESUELVE -->
+  <section class="mb-7">
+    <div class="flex items-start gap-3 sm:gap-4">
+      <span class="step-num">1</span>
+      <div class="min-w-0">
+        <h2 class="text-[15px] sm:text-[17px] font-extrabold text-[#0B1220]">El problema que resuelve</h2>
+        <p class="text-[13.5px] sm:text-[14.5px] text-[#475467] leading-relaxed mt-1">
+          Procesos, tasas y niveles de aprobación viven en manuales que nadie lee y en la memoria de tres personas.
+          El asistente los responde en segundos, con la fuente.
+        </p>
+        <p class="text-[13.5px] sm:text-[14.5px] text-[#475467] leading-relaxed mt-1">
+          Menos tiempo en consultas internas, <span class="font-semibold text-[#0B1220]">menos horas de capacitación repetida</span>.
         </p>
       </div>
+    </div>
+  </section>
 
-      <!-- PROBLEMA -->
-      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
-        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">El problema que resuelve</p>
-        <p class="text-[13px] text-[#475467] leading-relaxed">Procesos, tasas y niveles de aprobación viven en manuales que nadie lee y en la memoria de tres personas. El asistente los responde en segundos, con la fuente.<br><br>Menos tiempo en consultas internas, <span class="font-semibold text-[#0B1220]">menos horas de capacitación repetida</span>.</p>
-      </div>
-
-      <!-- AUTOR -->
-      <div class="rounded-2xl p-4 text-white" style="background:linear-gradient(135deg,#0B1220,#12305A)">
-        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#56CCA8] mb-1.5">Quién armó esto</p>
-        <p class="font-extrabold text-[15px] leading-tight">Ricardo Chen</p>
-        <p class="text-[11.5px] text-[#A9BED6] leading-snug mt-0.5">Consultoría e implementación de IA para empresas</p>
-        <p class="text-[11px] text-[#7E96B4] mt-1.5 italic">“Primero lo mapeas, después lo automatizas.”</p>
-        <div class="flex flex-wrap gap-1.5 mt-2.5">
-          <a href="https://pa.linkedin.com/in/ricardochen" target="_blank" rel="noopener"
-             class="text-[11px] font-bold bg-white/10 hover:bg-white/20 border border-white/20 rounded-full px-2.5 py-1 transition">LinkedIn</a>
-          <a href="https://ricardochen.github.io/banco-demo-credito/" target="_blank" rel="noopener"
-             class="text-[11px] font-bold bg-white/10 hover:bg-white/20 border border-white/20 rounded-full px-2.5 py-1 transition">Esta demo</a>
+  <!-- 2. PRUEBA CON UN CASO -->
+  <section class="mb-7">
+    <div class="flex items-start gap-3 sm:gap-4">
+      <span class="step-num">2</span>
+      <div class="min-w-0 w-full">
+        <h2 class="text-[15px] sm:text-[17px] font-extrabold text-[#0B1220]">Prueba con un caso</h2>
+        <p class="text-[13px] text-[#475467] mt-1">Elige una pregunta y el asistente la responde abajo, con la sección del KB de donde sale cada número.</p>
+        <div class="grid sm:grid-cols-3 gap-2 mt-3" id="chips">
+          <button class="chip-demo" type="button" data-badge="CON KB" data-kind="kb" data-note="Responde citando el KB">Cliente gana 1,500, ¿cuánto hipotecario?</button>
+          <button class="chip-demo" type="button" data-badge="CON KB" data-kind="kb" data-note="Documentos y tasa del producto">PYME: línea de 250k, ¿documentos y tasa?</button>
+          <button class="chip-demo" type="button" data-badge="SIN KB" data-kind="nokb" data-note="No está en la base: escala, no inventa">¿Comisión por desembolso anticipado?</button>
         </div>
-        <p class="text-[10px] text-[#5E7899] mt-2.5 leading-snug">Cofundador &amp; CTO, Wisy · Panamá / LatAm</p>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3">
+          <span class="flex items-center gap-1.5 text-[11px] text-[#475467]"><span class="badge badge-kb">CON KB</span> cita verificada</span>
+          <span class="flex items-center gap-1.5 text-[11px] text-[#475467]"><span class="badge badge-nokb">SIN KB</span> el dato no existe → no inventa</span>
+        </div>
       </div>
-
-      <p class="text-[11px] text-[#8A94A6] px-1">Demo con datos ficticios. Banco, tasas y productos no representan la oferta de ninguna institución.</p>
-    </aside>
-  </div>
-
-  <!-- FOOTER TÉCNICO -->
-  <footer class="mt-4 grid sm:grid-cols-3 gap-3">
-    <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
-      <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-1.5">Base de conocimiento</p>
-      <p class="text-[12px] text-[#475467] leading-relaxed">KB propio de <span class="font-semibold text-[#0B1220]">~5.200 tokens</span>: 10 secciones de producto, proceso, aprobaciones, rechazos y glosario. Versión y fecha de corte visibles en cada respuesta.</p>
     </div>
-    <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
-      <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-1.5">Retrieval</p>
-      <p class="text-[12px] text-[#475467] leading-relaxed">Recuperación sobre secciones con ID (<span class="font-mono text-[11px]">S1–S12</span>). La respuesta no puede citar una sección que no exista: el servidor lo verifica antes de devolverla.</p>
-    </div>
-    <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
-      <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-1.5">Sin alucinación</p>
-      <p class="text-[12px] text-[#475467] leading-relaxed">Sin dato en el KB → responde “no está en mi base, escala a Riesgo” y corta. Prohibido estimar, interpolar o calcular por analogía.</p>
-    </div>
-  </footer>
+  </section>
 
+  <!-- 3. CHAT -->
+  <section class="mb-7">
+    <div class="flex items-start gap-3 sm:gap-4">
+      <span class="step-num">3</span>
+      <div class="min-w-0 w-full">
+        <h2 class="text-[15px] sm:text-[17px] font-extrabold text-[#0B1220] mb-2.5">Pregúntale lo que quieras</h2>
+        <div class="chat-panel bg-white rounded-2xl border border-[#E3E8EF] shadow-sm overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-[#EEF1F6] bg-[#FAFBFC]">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-full grid place-items-center text-white font-extrabold text-sm shrink-0" style="background:linear-gradient(135deg,var(--brand),var(--brand2))">RC</div>
+              <div class="leading-tight min-w-0">
+                <p class="font-bold text-[13.5px]">Asistente de crédito</p>
+                <p class="text-[11.5px] text-emerald-600 font-semibold"><span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 align-middle"></span>KB v2.0 · vigente Q4 2026</p>
+              </div>
+            </div>
+            <span class="hidden sm:inline text-[10.5px] font-bold text-[#64748B] bg-white border border-[#E3E8EF] rounded-full px-2.5 py-1">RAG sobre KB propio</span>
+          </div>
+
+          <div id="log" class="scroll flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-3.5" style="min-height:300px"></div>
+
+          <form id="form" class="flex items-end gap-2 p-3 border-t border-[#EEF1F6] bg-[#FAFBFC]">
+            <textarea id="input" rows="1" placeholder="Pregunta sobre un producto, un monto o un requisito…"
+              class="flex-1 min-w-0 resize-none border border-[#D8DEE7] rounded-xl px-4 py-3 text-[14px] max-h-32 focus:outline-none focus:border-[#157347]"
+              style="min-height:2.9rem;line-height:1.5"></textarea>
+            <button type="submit" class="text-white font-bold px-5 py-3 rounded-xl text-sm shrink-0" style="background:var(--brand)">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CALL TO ACTION -->
+  <section class="mb-2">
+    <div class="flex items-start gap-3 sm:gap-4">
+      <span class="step-num">4</span>
+      <div class="min-w-0 w-full">
   <!-- CALL TO ACTION: captura en el mismo chat -->
-  <section class="mt-5 rounded-3xl overflow-hidden" id="cta" style="background:linear-gradient(135deg,#0B1220 0%,#12305A 60%,#0F5132 140%)">
+  <div class="rounded-3xl overflow-hidden" id="cta" style="background:linear-gradient(135deg,#0B1220 0%,#12305A 60%,#0F5132 140%)">
     <div class="px-7 sm:px-10 pt-9 pb-8 flex flex-col sm:flex-row items-start gap-6 justify-between">
       <div class="max-w-xl">
         <p class="text-[11px] font-bold uppercase tracking-[.15em] text-[#56CCA8]">Siguiente paso</p>
@@ -250,7 +200,11 @@
       <p class="text-[11px] text-[#7E96B4]">Cofundador &amp; CTO, Wisy</p>
       <p class="text-[11px] text-[#56CCA8] italic">“Primero lo mapeas, después lo automatizas.”</p>
     </div>
+  </div>
+      </div>
+    </div>
   </section>
+
 </div>
 
 <script>
@@ -260,7 +214,7 @@ const history = [];
 const log = document.getElementById('log');
 const form = document.getElementById('form');
 const input = document.getElementById('input');
-const pipelineSteps = document.querySelectorAll('#pipeline .step');
+const pipelineSteps = document.querySelectorAll('#pipeline .step'); // vacío tras la reestructuración
 
 const GREETING = 'Hola. Soy el asistente de crédito de tu equipo. Puedes preguntarme por tasas, documentos, plazos o por quién aprueba un monto. Manejo hipotecario, consumo, auto y PYME. Cada respuesta cita la sección de la base de donde sale. ¿Qué caso tienes?';
 
@@ -518,7 +472,7 @@ function beginLeadFromAnywhere() {
   document.querySelector('.chat-panel')?.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 document.getElementById('cta-start').addEventListener('click', beginLeadFromAnywhere);
-document.getElementById('cta-start-2').addEventListener('click', beginLeadFromAnywhere);
+
 
 /* -------------------------------------------- */
 
