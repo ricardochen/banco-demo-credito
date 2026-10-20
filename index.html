@@ -86,13 +86,13 @@
   /* --- Bloques de paso con fondo propio: rompen la monotonía --- */
   .step-block { border-radius:20px; padding:22px 20px; margin-bottom:18px; }
   @media (min-width:640px) { .step-block { padding:26px 28px; margin-bottom:22px; } }
-  .step-1 { background:linear-gradient(135deg,#F4F7FB 0%,#EDF1F7 100%); border:1px solid #DDE5EF; }
+  .step-1 { background:linear-gradient(135deg,#0F1F35 0%,#16304F 100%); border:1px solid #1E3A5F; box-shadow:0 8px 24px rgba(15,31,53,.16); }
   .step-2 { background:linear-gradient(135deg,#EFF6FF 0%,#E4EEFB 100%); border:1px solid #C9DCF2; }
   .step-3 { background:#FFFFFF; border:1px solid #E3E8EF; }
   .step-4 { background:transparent; padding:0; }
   .step-head { display:flex; align-items:center; gap:11px; margin-bottom:10px; }
   .step-num { flex-shrink:0; display:grid; place-items:center; width:38px; height:38px; border-radius:13px; background:#0F5132; color:#fff; font-size:17px; font-weight:800; box-shadow:0 3px 10px rgba(15,81,50,.28); }
-  .step-1 .step-num { background:#1E293B; box-shadow:0 3px 10px rgba(30,41,59,.26); }
+  .step-1 .step-num { background:#56CCA8; color:#08131F; box-shadow:0 3px 12px rgba(86,204,168,.45); }
   .step-2 .step-num { background:#1D4ED8; box-shadow:0 3px 10px rgba(29,78,216,.28); }
   .step-title { font-size:17px; font-weight:800; letter-spacing:-.01em; }
   @media (min-width:640px) { .step-title { font-size:19px; } }
@@ -101,15 +101,15 @@
   /* Gancho de la sección 1 */
   .hook { font-size:20px; font-weight:800; line-height:1.28; letter-spacing:-.02em; }
   @media (min-width:640px) { .hook { font-size:26px; line-height:1.25; } }
-  .hook-em { color:#0B1220; background:linear-gradient(180deg,transparent 63%,#CFE3D9 63%); padding:0 1px; }
+  .hook-em { color:#56CCA8; background:none; padding:0; }
   /* Comparación antes / ahora */
   .ba { border-radius:14px; padding:13px 14px; }
-  .ba-antes { background:rgba(255,255,255,.62); border:1px solid #DFE6EF; }
-  .ba-ahora { background:#fff; border:1.5px solid #9FD5BA; box-shadow:0 4px 14px rgba(15,81,50,.10); }
+  .ba-antes { background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.28); }
+  .ba-ahora { background:#fff; border:1.5px solid #56CCA8; box-shadow:0 6px 20px rgba(0,0,0,.28); }
   .ba-ico { width:20px; height:20px; border-radius:999px; display:grid; place-items:center; flex-shrink:0; }
-  .ba-ico-bad { background:#EEF1F6; color:#8091A8; }
+  .ba-ico-bad { background:rgba(255,255,255,.22); color:#E8EFF7; }
   .ba-ico-good { background:#DCF3E6; color:#0F5132; }
-  .ba-vs { font-size:16px; color:#0F5132; background:#fff; border:1px solid #CFE0D6; width:30px; height:30px; border-radius:999px; display:grid; place-items:center; font-weight:800; }
+  .ba-vs { font-size:16px; color:#08131F; background:#56CCA8; border:1px solid #56CCA8; width:30px; height:30px; border-radius:999px; display:grid; place-items:center; font-weight:800; }
   .chat-panel { height: 62vh; min-height: 420px; max-height: 620px; }
   @media (max-width: 1023px) { .chat-panel { height: 62vh; min-height: 380px; max-height: none; width:100%; } }
   .pulse { animation: pulse 1.4s ease-in-out infinite; }
@@ -137,16 +137,16 @@
     <div class="step-head">
       <span class="step-num">1</span>
       <div>
-        <p class="step-kicker">El punto de partida</p>
-        <h2 class="step-title text-[#1E293B]">El problema que resuelve</h2>
+        <p class="step-kicker text-[#8FA6C0]">El punto de partida</p>
+        <h2 class="step-title text-white">El problema que resuelve</h2>
       </div>
     </div>
 
-    <p class="hook text-[#0F172A]">
+    <p class="hook text-white">
       Procesos, tasas y niveles de aprobación viven en<br class="hidden sm:block">
       <span class="hook-em">manuales que nadie lee</span> y en la memoria de <span class="hook-em">tres personas</span>.
     </p>
-    <p class="text-[13.5px] text-[#52607A] mt-3 leading-relaxed max-w-[58ch]">
+    <p class="text-[13.5px] text-[#A9BED6] mt-3 leading-relaxed max-w-[58ch]">
       Cuando alguien pregunta cuánto se presta o quién aprueba qué, la respuesta depende de quién esté disponible.
       El asistente responde en segundos, con la sección del KB citada.
     </p>
@@ -155,11 +155,11 @@
       <div class="ba ba-antes">
         <div class="flex items-center gap-2 mb-1.5">
           <span class="ba-ico ba-ico-bad">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
           </span>
-          <p class="text-[11px] font-extrabold uppercase tracking-[.1em] text-[#5C6B82]">Sin el asistente</p>
+          <p class="text-[11px] font-extrabold uppercase tracking-[.1em] text-[#CBD9E8]">Sin el asistente</p>
         </div>
-        <p class="text-[13px] text-[#52607A] leading-snug">Cada consulta es una llamada o un correo a otra área. La respuesta depende de quién esté disponible.</p>
+        <p class="text-[13px] text-[#DCE7F2] leading-snug">Cada consulta es una llamada o un correo a otra área. La respuesta depende de quién esté disponible.</p>
       </div>
 
       <div class="hidden sm:flex items-center justify-center">
