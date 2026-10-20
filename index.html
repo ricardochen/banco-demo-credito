@@ -219,7 +219,7 @@
           Deja tus datos aquí
           <svg style="position:relative;top:-1px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
-        <p class="text-[10.5px] text-[#5E7899] sm:text-right mt-2">Son tres datos. Toma 20 segundos.</p>
+        <p class="text-[10.5px] text-[#5E7899] sm:text-right mt-2">Te pregunto aquí mismo. Toma 20 segundos.</p>
       </div>
     </div>
     <div class="border-t border-white/10 px-7 sm:px-10 pt-4 pb-9 flex flex-col sm:flex-row sm:flex-wrap gap-x-4 gap-y-1.5">
@@ -366,9 +366,19 @@ async function send(text) {
   }
 }
 
-form.addEventListener('submit', (e) => { e.preventDefault(); send(input.value); });
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (leadMode) { const v = input.value; input.value=''; input.style.height='auto'; addBubble('user', v); handleLeadInput(v); }
+  else send(input.value);
+});
 input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 128) + 'px'; });
-input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input.value); } });
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (leadMode) { const v = input.value; input.value=''; input.style.height='auto'; addBubble('user', v); handleLeadInput(v); }
+    else send(input.value);
+  }
+});
 // Pinta badge + nota dentro de cada chip
 document.querySelectorAll('#chips .chip-demo').forEach(btn => {
   const q = btn.textContent.trim();
@@ -381,105 +391,110 @@ document.querySelectorAll('#chips .chip-demo').forEach(btn => {
 });
 
 
-/* ---------- Captura de contacto en el mismo chat ---------- */
+/* ---------- Captura de contacto conversacional ---------- */
 const LEAD_ENDPOINT = 'https://yllbwunwnkyspthqpbrj.supabase.co/functions/v1/agente-lead-banco';
-let leadState = { step: 0, data: { nombre:'', empresa:'', contacto:'', contexto:'' } };
+let leadMode = false;
+let leadStep = 0;
+let leadData = { nombre:'', empresa:'', contacto:'', contexto:'' };
 
 function scrollDown(){ log.scrollTop = log.scrollHeight; }
 
+const LEAD_PROMPTS = [
+  'Perfecto. ¿Cómo te llamas?',
+  'Gracias. ¿En qué empresa o banco trabajas?',
+  '¿Cuál es tu email o teléfono para que Ricardo te escriba?',
+  'Última: ¿qué proceso te gustaría automatizar? Si prefieres, escribe "listo".',
+];
+
 function startLead() {
-  if (leadState.step > 0) { input.focus(); return; }
-  leadState = { step: 1, data: { nombre:'', empresa:'', contacto:'', contexto:'' } };
+  if (leadMode) { input.focus(); return; }
+  leadMode = true;
+  leadStep = 1;
+  leadData = { nombre:'', empresa:'', contacto:'', contexto:'' };
+  input.placeholder = 'Escribe tu nombre…';
+  addBubble('bot', LEAD_PROMPTS[0]);
+  input.focus();
+}
 
-  const row = document.createElement('div');
-  row.className = 'flex justify-start';
-  row.id = 'lead-row';
-  row.innerHTML = `
-    <div class="bubble-bot px-4 py-3 text-[13.5px] max-w-[92%] w-full">
-      <p class="chat-p font-semibold">Perfecto. Son tres datos y se los mando a Ricardo directo. 👇</p>
-      <form class="leadform" id="leadform" novalidate>
-        <div class="row">
-          <label for="lf-nombre">Tu nombre</label>
-          <input id="lf-nombre" name="nombre" autocomplete="name" placeholder="Nombre y apellido" />
-        </div>
-        <div class="row">
-          <label for="lf-empresa">Empresa</label>
-          <input id="lf-empresa" name="empresa" autocomplete="organization" placeholder="Banco / financiera" />
-        </div>
-        <div class="row">
-          <label for="lf-contacto">Email o teléfono</label>
-          <input id="lf-contacto" name="contacto" placeholder="tu@empresa.com o +507 6000-0000" />
-        </div>
-        <div class="row">
-          <label for="lf-contexto">¿Qué proceso quieres automatizar? <span class="normal-case font-normal text-[#8A94A6]">(opcional)</span></label>
-          <textarea id="lf-contexto" name="contexto" rows="2" placeholder="Ej: consultas de oficiales sobre tasas y requisitos"></textarea>
-        </div>
-        <p class="err hidden" id="lf-err">Completa tu nombre y un email o teléfono.</p>
-        <div class="actions">
-          <button class="go" type="submit">Enviar a Ricardo</button>
-          <button class="cancel" type="button" id="lf-cancel">Cancelar</button>
-        </div>
-      </form>
-    </div>`;
-  log.appendChild(row);
-  scrollDown();
-  document.getElementById('lf-nombre').focus();
+async function sendLead() {
+  const btnText = 'Enviando…';
+  const isEmail = leadData.contacto.includes('@');
+  try {
+    const res = await fetch(LEAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: leadData.nombre,
+        empresa: leadData.empresa,
+        contexto: leadData.contexto,
+        email: isEmail ? leadData.contacto : '',
+        telefono: isEmail ? '' : leadData.contacto,
+        origen: 'demo-banco:' + location.pathname,
+      }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error('fail');
 
-  document.getElementById('lf-cancel').addEventListener('click', () => {
-    row.remove(); leadState.step = 0;
-  });
+    const nombre = leadData.nombre.split(' ')[0];
+    leadMode = false; leadStep = 0;
+    input.placeholder = 'Pregunta sobre un producto, un monto o un requisito…';
+    addBubble('bot', `Listo, ${nombre}. Tus datos ya llegaron a Ricardo y te escribe en menos de 24 horas hábiles.\n\nMientras tanto puedes seguir probando el asistente.`);
+    const row = document.createElement('div');
+    row.className = 'flex justify-start';
+    row.innerHTML = '<div class="escalate">✅ Enviado directo al Telegram de Ricardo.</div>';
+    log.appendChild(row);
+    scrollDown();
+  } catch (e) {
+    leadMode = false; leadStep = 0;
+    input.placeholder = 'Pregunta sobre un producto, un monto o un requisito…';
+    addBubble('bot', 'No pude enviar tus datos. Intenta de nuevo o escríbeme por LinkedIn.');
+  }
+}
 
-  document.getElementById('leadform').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const nombre = document.getElementById('lf-nombre').value.trim();
-    const empresa = document.getElementById('lf-empresa').value.trim();
-    const contacto = document.getElementById('lf-contacto').value.trim();
-    const contexto = document.getElementById('lf-contexto').value.trim();
-    const err = document.getElementById('lf-err');
+// Captura la respuesta del prospecto cuando está en modo lead
+function handleLeadInput(text) {
+  const t = text.trim();
+  if (!t) return;
 
-    if (!nombre || !contacto) {
-      err.classList.remove('hidden');
+  if (leadStep === 1) {
+    leadData.nombre = t;
+    leadStep = 2;
+    addBubble('bot', LEAD_PROMPTS[1]);
+    input.placeholder = 'Tu empresa o banco…';
+    return;
+  }
+  if (leadStep === 2) {
+    leadData.empresa = t;
+    leadStep = 3;
+    addBubble('bot', LEAD_PROMPTS[2]);
+    input.placeholder = 'tu@empresa.com o +507 6000-0000';
+    return;
+  }
+  if (leadStep === 3) {
+    // valida que parezca email o teléfono
+    const looksContact = t.includes('@') || /[0-9]{6,}/.test(t.replace(/[^0-9]/g,''));
+    if (!looksContact) {
+      addBubble('bot', 'Necesito un email o un teléfono para que Ricardo te pueda escribir. ¿Cuál me dejas?');
       return;
     }
-    err.classList.add('hidden');
-
-    const isEmail = contacto.includes('@');
-    const btn = e.target.querySelector('button.go');
-    btn.textContent = 'Enviando…'; btn.disabled = true;
-
-    try {
-      const res = await fetch(LEAD_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre, empresa, contexto,
-          email: isEmail ? contacto : '',
-          telefono: isEmail ? '' : contacto,
-          origen: 'demo-banco:' + location.pathname,
-        }),
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error('fail');
-
-      row.remove();
-      leadState.step = 0;
-      addBubble('bot', `Listo, ${nombre.split(' ')[0]}. Ricardo ya recibió tus datos y te escribe en menos de 24 horas hábiles.\n\nMientras tanto puedes seguir probando el asistente.`);
-      const confirmRow = document.createElement('div');
-      confirmRow.className = 'flex justify-start';
-      confirmRow.innerHTML = '<div class="escalate">✅ Enviado. Tus datos llegaron directo al Telegram de Ricardo — sin formularios externos.</div>';
-      log.appendChild(confirmRow);
-      scrollDown();
-    } catch (err2) {
-      btn.textContent = 'Enviar a Ricardo'; btn.disabled = false;
-      err.textContent = 'No pudimos enviar. Intenta otra vez o escríbeme por LinkedIn.';
-      err.classList.remove('hidden');
-    }
-  });
+    leadData.contacto = t;
+    leadStep = 4;
+    addBubble('bot', LEAD_PROMPTS[3]);
+    input.placeholder = 'Ej: consultas de oficiales sobre tasas… (o "listo")';
+    return;
+  }
+  if (leadStep === 4) {
+    leadData.contexto = /^listo$/i.test(t) ? '' : t;
+    addBubble('bot', 'Enviando a Ricardo…');
+    sendLead();
+    return;
+  }
 }
 
 document.getElementById('cta-start').addEventListener('click', () => {
   startLead();
-  document.querySelector('section[style*="height:min(74vh"]')?.scrollIntoView({ behavior:'smooth', block:'center' });
+  const chatCard = document.querySelector('.bubble-bot');
+  chatCard?.closest('section')?.scrollIntoView({ behavior:'smooth', block:'center' });
 });
 
 /* -------------------------------------------- */
