@@ -61,6 +61,15 @@
   .step.on { background:#0F5132; border-color:#0F5132; color:#fff; }
   .step.ok { background:#E8F5EE; border-color:#BFE3D0; color:#0F5132; }
   .arrow { color:#CBD5E1; }
+  .leadform { background:#F7FBF9; border:1px solid #CFE8DC; border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:8px; }
+  .leadform label { font-size:10.5px; font-weight:700; color:#3D5A78; text-transform:uppercase; letter-spacing:.06em; }
+  .leadform input, .leadform textarea { border:1px solid #D8DEE7; border-radius:8px; padding:7px 9px; font-size:13px; background:#fff; width:100%; }
+  .leadform input:focus, .leadform textarea:focus { outline:none; border-color:var(--brand); }
+  .leadform .row { display:flex; flex-direction:column; gap:3px; }
+  .leadform .actions { display:flex; gap:6px; align-items:center; margin-top:2px; }
+  .leadform button.go { background:var(--brand); color:#fff; font-weight:800; font-size:12.5px; border-radius:8px; padding:8px 14px; }
+  .leadform button.cancel { color:#64748B; font-size:12px; font-weight:600; padding:8px 4px; }
+  .leadform .err { color:#B42318; font-size:11px; font-weight:600; }
   .pulse { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
 </style>
@@ -188,27 +197,29 @@
     </div>
   </footer>
 
-  <!-- CALL TO ACTION -->
-  <section class="mt-5 rounded-3xl overflow-hidden" style="background:linear-gradient(135deg,#0B1220 0%,#12305A 60%,#0F5132 140%)">
-    <div class="px-7 sm:px-10 pt-10 pb-8 sm:py-9 flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between">
+  <!-- CALL TO ACTION: captura en el mismo chat -->
+  <section class="mt-5 rounded-3xl overflow-hidden" id="cta" style="background:linear-gradient(135deg,#0B1220 0%,#12305A 60%,#0F5132 140%)">
+    <div class="px-7 sm:px-10 pt-9 pb-8 flex flex-col sm:flex-row items-start gap-6 justify-between">
       <div class="max-w-xl">
         <p class="text-[11px] font-bold uppercase tracking-[.15em] text-[#56CCA8]">Siguiente paso</p>
         <h2 class="text-white text-2xl sm:text-[27px] font-extrabold leading-tight mt-1.5">Este asistente se puede montar sobre los procesos de tu empresa.</h2>
         <p class="text-[#A9BED6] text-[13.5px] leading-relaxed mt-2">
-          El diagnóstico es <span class="font-semibold text-white">sin costo</span>: una sesión, un mapa de procesos y los tres casos donde el retorno es más claro. Después decides si seguimos.
+          El diagnóstico es <span class="font-semibold text-white">sin costo</span>: una sesión, un mapa de procesos y los tres casos donde el retorno es más claro.
+          Deja tus datos aquí mismo y Ricardo te escribe.
         </p>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3">
+          <p class="text-[11px] text-[#7E96B4]">✓ Sin formularios externos</p>
+          <p class="text-[11px] text-[#7E96B4]">✓ Llega directo a su Telegram</p>
+          <p class="text-[11px] text-[#7E96B4]">✓ Respuesta en menos de 24 h</p>
+        </div>
       </div>
-      <div class="flex flex-col sm:items-end gap-2.5 shrink-0 w-full sm:w-auto">
-        <a href="https://pa.linkedin.com/in/ricardochen" target="_blank" rel="noopener"
-           class="inline-flex items-center justify-center gap-2 bg-[#56CCA8] hover:bg-[#6FDDB8] text-[#0B1220] font-extrabold text-[14px] rounded-xl px-6 py-3 transition shadow-lg shadow-black/20">
-          Escríbeme por LinkedIn
+      <div class="shrink-0 w-full sm:w-auto">
+        <button id="cta-start" type="button"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#56CCA8] hover:bg-[#6FDDB8] text-[#0B1220] font-extrabold text-[14px] rounded-xl px-6 py-3 transition shadow-lg shadow-black/20">
+          Deja tus datos aquí
           <svg style="position:relative;top:-1px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-        <a href="mailto:ricardo@ricardochen.ai?subject=Quiero%20un%20diagn%C3%B3stico%20de%20procesos%20con%20IA&body=Hola%20Ricardo%2C%20vi%20la%20demo%20del%20asistente%20de%20cr%C3%A9dito%20y%20quiero%20ver%20un%20diagn%C3%B3stico%20para%20mi%20equipo."
-           class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold text-[12.5px] rounded-xl px-5 py-2.5 transition">
-          Enviar un correo
-        </a>
-        <p class="text-[10.5px] text-[#5E7899] sm:text-right mt-1">Respuesta en menos de 24 horas hábiles</p>
+        </button>
+        <p class="text-[10.5px] text-[#5E7899] sm:text-right mt-2">Son tres datos. Toma 20 segundos.</p>
       </div>
     </div>
     <div class="border-t border-white/10 px-7 sm:px-10 pt-4 pb-9 flex flex-col sm:flex-row sm:flex-wrap gap-x-4 gap-y-1.5">
@@ -368,6 +379,110 @@ document.querySelectorAll('#chips .chip-demo').forEach(btn => {
 document.querySelectorAll('#chips .chip-demo').forEach(btn => {
   btn.addEventListener('click', () => send(btn.querySelector('.qt').textContent.trim()));
 });
+
+
+/* ---------- Captura de contacto en el mismo chat ---------- */
+const LEAD_ENDPOINT = 'https://yllbwunwnkyspthqpbrj.supabase.co/functions/v1/agente-lead-banco';
+let leadState = { step: 0, data: { nombre:'', empresa:'', contacto:'', contexto:'' } };
+
+function scrollDown(){ log.scrollTop = log.scrollHeight; }
+
+function startLead() {
+  if (leadState.step > 0) { input.focus(); return; }
+  leadState = { step: 1, data: { nombre:'', empresa:'', contacto:'', contexto:'' } };
+
+  const row = document.createElement('div');
+  row.className = 'flex justify-start';
+  row.id = 'lead-row';
+  row.innerHTML = `
+    <div class="bubble-bot px-4 py-3 text-[13.5px] max-w-[92%] w-full">
+      <p class="chat-p font-semibold">Perfecto. Son tres datos y se los mando a Ricardo directo. 👇</p>
+      <form class="leadform" id="leadform" novalidate>
+        <div class="row">
+          <label for="lf-nombre">Tu nombre</label>
+          <input id="lf-nombre" name="nombre" autocomplete="name" placeholder="Nombre y apellido" />
+        </div>
+        <div class="row">
+          <label for="lf-empresa">Empresa</label>
+          <input id="lf-empresa" name="empresa" autocomplete="organization" placeholder="Banco / financiera" />
+        </div>
+        <div class="row">
+          <label for="lf-contacto">Email o teléfono</label>
+          <input id="lf-contacto" name="contacto" placeholder="tu@empresa.com o +507 6000-0000" />
+        </div>
+        <div class="row">
+          <label for="lf-contexto">¿Qué proceso quieres automatizar? <span class="normal-case font-normal text-[#8A94A6]">(opcional)</span></label>
+          <textarea id="lf-contexto" name="contexto" rows="2" placeholder="Ej: consultas de oficiales sobre tasas y requisitos"></textarea>
+        </div>
+        <p class="err hidden" id="lf-err">Completa tu nombre y un email o teléfono.</p>
+        <div class="actions">
+          <button class="go" type="submit">Enviar a Ricardo</button>
+          <button class="cancel" type="button" id="lf-cancel">Cancelar</button>
+        </div>
+      </form>
+    </div>`;
+  log.appendChild(row);
+  scrollDown();
+  document.getElementById('lf-nombre').focus();
+
+  document.getElementById('lf-cancel').addEventListener('click', () => {
+    row.remove(); leadState.step = 0;
+  });
+
+  document.getElementById('leadform').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById('lf-nombre').value.trim();
+    const empresa = document.getElementById('lf-empresa').value.trim();
+    const contacto = document.getElementById('lf-contacto').value.trim();
+    const contexto = document.getElementById('lf-contexto').value.trim();
+    const err = document.getElementById('lf-err');
+
+    if (!nombre || !contacto) {
+      err.classList.remove('hidden');
+      return;
+    }
+    err.classList.add('hidden');
+
+    const isEmail = contacto.includes('@');
+    const btn = e.target.querySelector('button.go');
+    btn.textContent = 'Enviando…'; btn.disabled = true;
+
+    try {
+      const res = await fetch(LEAD_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre, empresa, contexto,
+          email: isEmail ? contacto : '',
+          telefono: isEmail ? '' : contacto,
+          origen: 'demo-banco:' + location.pathname,
+        }),
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error('fail');
+
+      row.remove();
+      leadState.step = 0;
+      addBubble('bot', `Listo, ${nombre.split(' ')[0]}. Ricardo ya recibió tus datos y te escribe en menos de 24 horas hábiles.\n\nMientras tanto puedes seguir probando el asistente.`);
+      const confirmRow = document.createElement('div');
+      confirmRow.className = 'flex justify-start';
+      confirmRow.innerHTML = '<div class="escalate">✅ Enviado. Tus datos llegaron directo al Telegram de Ricardo — sin formularios externos.</div>';
+      log.appendChild(confirmRow);
+      scrollDown();
+    } catch (err2) {
+      btn.textContent = 'Enviar a Ricardo'; btn.disabled = false;
+      err.textContent = 'No pudimos enviar. Intenta otra vez o escríbeme por LinkedIn.';
+      err.classList.remove('hidden');
+    }
+  });
+}
+
+document.getElementById('cta-start').addEventListener('click', () => {
+  startLead();
+  document.querySelector('section[style*="height:min(74vh"]')?.scrollIntoView({ behavior:'smooth', block:'center' });
+});
+
+/* -------------------------------------------- */
 
 addBubble('bot', GREETING);
 input.focus();
