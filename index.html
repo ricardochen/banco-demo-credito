@@ -70,6 +70,12 @@
   .leadform button.go { background:var(--brand); color:#fff; font-weight:800; font-size:12.5px; border-radius:8px; padding:8px 14px; }
   .leadform button.cancel { color:#64748B; font-size:12px; font-weight:600; padding:8px 4px; }
   .leadform .err { color:#B42318; font-size:11px; font-weight:600; }
+  /* Panel del chat: alto útil en escritorio, sin desperdicio en móvil */
+  .chat-panel { height: 78vh; min-height: 560px; max-height: 820px; }
+  @media (min-width: 1024px) {
+    #aside-panel { height: 78vh; min-height: 560px; max-height: 820px; overflow-y: auto; }
+  }
+  @media (max-width: 1023px) { .chat-panel { height: auto; min-height: 0; max-height: none; } }
   .pulse { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
 </style>
@@ -79,13 +85,13 @@
 <div class="app px-4 sm:px-6 py-6">
 
   <!-- HEADER -->
-  <header class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-5">
+  <header class="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 mb-3 sm:mb-5">
     <div>
       <p class="text-[11px] font-bold uppercase tracking-[.15em] text-[#157347]">Banco Demo · Panamá · Uso interno</p>
-      <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mt-1">El asistente de crédito de tu equipo bancario</h1>
-      <p class="text-sm text-[#475467] mt-1">Responde cualquier consulta de crédito en segundos. Y te dice de dónde salió cada número.</p>
+      <h1 class="text-xl sm:text-3xl font-extrabold leading-tight mt-1">El asistente de crédito de tu equipo bancario</h1>
+      <p class="text-[13px] sm:text-sm text-[#475467] mt-1">Responde cualquier consulta de crédito en segundos. Y te dice de dónde salió cada número.</p>
     </div>
-    <div class="flex items-center gap-2 text-[12px] shrink-0">
+    <div class="hidden sm:flex items-center gap-2 text-[12px] shrink-0">
       <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">Hipotecario</span>
       <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">PYME</span>
       <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">Consumo</span>
@@ -95,8 +101,8 @@
   <div class="grid lg:grid-cols-[1fr_340px] gap-4 items-start">
 
     <!-- CHAT -->
-    <section class="bg-white rounded-2xl border border-[#E3E8EF] shadow-sm overflow-hidden flex flex-col" style="height:min(74vh,660px)">
-      <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-[#EEF1F6] bg-[#FAFBFC]">
+    <section class="chat-panel bg-white rounded-2xl border border-[#E3E8EF] shadow-sm overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between gap-3 px-4 py-2.5 sm:py-3 border-b border-[#EEF1F6] bg-[#FAFBFC]">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-full grid place-items-center text-white font-extrabold text-sm" style="background:linear-gradient(135deg,var(--brand),var(--brand2))">RC</div>
           <div class="leading-tight">
@@ -104,10 +110,10 @@
             <p class="text-[11.5px] text-emerald-600 font-semibold"><span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 align-middle"></span>KB v2.0 · vigente Q4 2026</p>
           </div>
         </div>
-        <span class="text-[10.5px] font-bold text-[#64748B] bg-white border border-[#E3E8EF] rounded-full px-2.5 py-1">RAG sobre KB propio</span>
+        <span class="hidden sm:inline text-[10.5px] font-bold text-[#64748B] bg-white border border-[#E3E8EF] rounded-full px-2.5 py-1">RAG sobre KB propio</span>
       </div>
 
-      <div id="log" class="scroll flex-1 overflow-y-auto px-4 py-5 space-y-4"></div>
+      <div id="log" class="scroll flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-5 space-y-3.5 sm:space-y-4" style="min-height:220px;max-height:52vh"></div>
 
       <form id="form" class="flex items-end gap-2 p-3 border-t border-[#EEF1F6] bg-[#FAFBFC]">
         <textarea id="input" rows="1" placeholder="Pregunta sobre un producto, un monto o un requisito…"
@@ -117,33 +123,17 @@
       </form>
     </section>
 
+    <!-- CTA móvil: solo en pantallas pequeñas, justo bajo el chat -->
+    <button id="cta-start-2" type="button"
+      class="lg:hidden w-full inline-flex items-center justify-center gap-2 bg-[#0F5132] hover:bg-[#157347] text-white font-extrabold text-[13.5px] rounded-xl px-5 py-3 mt-3 transition">
+      Deja tus datos aquí — diagnóstico sin costo
+      <svg style="position:relative;top:-1px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+
     <!-- PANEL LATERAL -->
-    <aside class="space-y-3">
+    <aside class="space-y-3 scroll" id="aside-panel">
 
-      <!-- PIPELINE RAG -->
-      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
-        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2.5">Cómo responde</p>
-        <div class="pipeline" id="pipeline">
-          <span class="step" data-step="q">1 Pregunta</span>
-          <span class="arrow">→</span>
-          <span class="step" data-step="r">2 Busca en KB</span>
-          <span class="arrow">→</span>
-          <span class="step" data-step="g">3 Genera</span>
-          <span class="arrow">→</span>
-          <span class="step" data-step="v">4 Verifica cita</span>
-        </div>
-        <p class="text-[12px] text-[#475467] leading-relaxed mt-2.5">
-          Cada respuesta cita la sección del KB de donde sale el dato. Si el dato no está, el asistente lo dice y escala — <span class="font-semibold text-[#0B1220]">no lo inventa</span>.
-        </p>
-      </div>
-
-      <!-- PROBLEMA -->
-      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
-        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">El problema que resuelve</p>
-        <p class="text-[13px] text-[#475467] leading-relaxed">Procesos, tasas y niveles de aprobación viven en manuales que nadie lee y en la memoria de tres personas. El asistente los responde en segundos, con la fuente.<br><br>Menos tiempo en consultas internas, <span class="font-semibold text-[#0B1220]">menos horas de capacitación repetida</span>.</p>
-      </div>
-
-      <!-- PRUEBA -->
+      <!-- PRUEBA (primero: es lo que engancha) -->
       <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
         <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">Prueba con un caso</p>
         <div class="flex flex-col gap-2" id="chips">
@@ -160,6 +150,29 @@
           <div class="flex items-start gap-1.5 text-[11px] leading-snug text-[#475467]"><span class="badge badge-nokb">SIN KB</span><span>El dato no existe en la base → escala, <span class="font-semibold text-[#0B1220]">no inventa</span></span></div>
           <div class="flex items-start gap-1.5 text-[11px] leading-snug text-[#475467]"><span class="badge badge-legal">CUMPLIMIENTO</span><span>Se niega ante algo indebido y cita la norma</span></div>
         </div>
+      </div>
+
+      <!-- PIPELINE RAG -->
+      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
+        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2.5">Cómo responde</p>
+        <div class="pipeline" id="pipeline">
+          <span class="step" data-step="q">1 Pregunta</span>
+          <span class="arrow">→</span>
+          <span class="step" data-step="r">2 Busca en KB</span>
+          <span class="arrow">→</span>
+          <span class="step" data-step="g">3 Genera</span>
+          <span class="arrow">→</span>
+          <span class="step" data-step="v">4 Verifica</span>
+        </div>
+        <p class="text-[12px] text-[#475467] leading-relaxed mt-2.5">
+          Cada respuesta cita la sección del KB de donde sale el dato. Si el dato no está, el asistente lo dice y escala — <span class="font-semibold text-[#0B1220]">no lo inventa</span>.
+        </p>
+      </div>
+
+      <!-- PROBLEMA -->
+      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
+        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">El problema que resuelve</p>
+        <p class="text-[13px] text-[#475467] leading-relaxed">Procesos, tasas y niveles de aprobación viven en manuales que nadie lee y en la memoria de tres personas. El asistente los responde en segundos, con la fuente.<br><br>Menos tiempo en consultas internas, <span class="font-semibold text-[#0B1220]">menos horas de capacitación repetida</span>.</p>
       </div>
 
       <!-- AUTOR -->
@@ -491,11 +504,12 @@ function handleLeadInput(text) {
   }
 }
 
-document.getElementById('cta-start').addEventListener('click', () => {
+function beginLeadFromAnywhere() {
   startLead();
-  const chatCard = document.querySelector('.bubble-bot');
-  chatCard?.closest('section')?.scrollIntoView({ behavior:'smooth', block:'center' });
-});
+  document.querySelector('.chat-panel')?.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+document.getElementById('cta-start').addEventListener('click', beginLeadFromAnywhere);
+document.getElementById('cta-start-2').addEventListener('click', beginLeadFromAnywhere);
 
 /* -------------------------------------------- */
 
