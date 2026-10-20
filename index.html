@@ -31,7 +31,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root { --ink:#0B1220; --brand:#0F5132; --brand2:#157347; --navy:#0B1220; }
+  html, body { max-width:100%; overflow-x:hidden; }
   body { font-family:'Inter',system-ui,sans-serif; background:#F4F6F8; color:var(--ink); }
+  /* Blindaje contra scroll horizontal en iOS (Safari cuenta el layout de forma distinta) */
+  .app, .app * { min-width:0; }
+  .bubble-bot, .bubble-user { overflow-wrap:anywhere; word-break:break-word; }
+  .srctag, .cite { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+  .chat-panel, #aside-panel, #log { max-width:100%; }
   .app { max-width:1180px; margin:0 auto; }
   .bubble-bot { background:#fff; border:1px solid #E3E8EF; border-radius:14px; border-bottom-left-radius:4px; }
   .bubble-user { background:var(--brand); color:#fff; border-radius:14px; border-bottom-right-radius:4px; }
@@ -41,7 +47,8 @@
   .chip-demo:hover { border-color:var(--brand); background:#F7FBF9; }
   .chip-demo .note { font-size:10px; color:#8A94A6; }
   .chip-demo:hover .note { color:#5B7A68; }
-  .badge { display:inline-block; font-size:9px; font-weight:800; letter-spacing:.04em; border-radius:4px; padding:1px 4px; white-space:nowrap; }
+  .badge { display:inline-block; font-size:9px; font-weight:800; letter-spacing:.04em; border-radius:4px; padding:1px 4px; white-space:nowrap; max-width:100%; flex-shrink:0; }
+  @media (max-width:340px) { .badge { font-size:8px; letter-spacing:0; padding:1px 3px; } }
   .badge-kb { background:#E8F5EE; color:#0F5132; border:1px solid #BFE3D0; }
   .badge-nokb { background:#FFF8E8; color:#8A6114; border:1px solid #F2D9A0; }
   .badge-legal { background:#EEF0FF; color:#3D3B8E; border:1px solid #C7C9F2; }
@@ -71,11 +78,13 @@
   .leadform button.cancel { color:#64748B; font-size:12px; font-weight:600; padding:8px 4px; }
   .leadform .err { color:#B42318; font-size:11px; font-weight:600; }
   /* Panel del chat: alto útil en escritorio, sin desperdicio en móvil */
+  .main-grid { display:grid; grid-template-columns:minmax(0,1fr); }
+  @media (min-width:1024px) { .main-grid { grid-template-columns:minmax(0,1fr) 340px; } }
   .chat-panel { height: 78vh; min-height: 560px; max-height: 820px; }
   @media (min-width: 1024px) {
     #aside-panel { height: 78vh; min-height: 560px; max-height: 820px; overflow-y: auto; }
   }
-  @media (max-width: 1023px) { .chat-panel { height: auto; min-height: 0; max-height: none; } }
+  @media (max-width: 1023px) { .chat-panel { height: auto; min-height: 0; max-height: none; width: 100%; } }
   .pulse { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
 </style>
@@ -98,7 +107,7 @@
     </div>
   </header>
 
-  <div class="grid lg:grid-cols-[1fr_340px] gap-4 items-start">
+  <div class="main-grid gap-4 items-start w-full">
 
     <!-- CHAT -->
     <section class="chat-panel bg-white rounded-2xl border border-[#E3E8EF] shadow-sm overflow-hidden flex flex-col">
