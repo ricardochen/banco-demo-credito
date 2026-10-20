@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agente interno de crédito — Banco Demo (Panamá)</title>
-<meta name="description" content="Demo de agente interno de crédito para colaboradores de banco: procesos, tasas, requerimientos y niveles de aprobación.">
+<title>Asistente de crédito bancario — Demo</title>
+<meta name="description" content="Un asistente que responde a colaboradores de banco sobre procesos, tasas y niveles de aprobación en segundos, con la regla que respalda cada número. Demo funcional, datos ficticios.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://ricardochen.github.io/banco-demo-credito/">
 
@@ -12,8 +12,8 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Ricardo Chen — IA operativa">
 <meta property="og:locale" content="es_PA">
-<meta property="og:title" content="Agente interno de crédito — Demo (Panamá)">
-<meta property="og:description" content="Un agente que responde a empleados de banco sobre procesos, tasas y requerimientos de préstamos hipotecarios y PYME. Demo funcional, datos ficticios.">
+<meta property="og:title" content="Asistente de crédito bancario — Demo">
+<meta property="og:description" content="Procesos, tasas y niveles de aprobación respondidos en segundos, con la fuente. Demo funcional, datos ficticios.">
 <meta property="og:url" content="https://ricardochen.github.io/banco-demo-credito/">
 <meta property="og:image" content="https://ricardochen.github.io/banco-demo-credito/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -21,8 +21,8 @@
 <meta property="og:image:alt" content="Captura del chat del agente interno de crédito">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Agente interno de crédito — Demo (Panamá)">
-<meta name="twitter:description" content="Un agente que responde a empleados de banco sobre procesos, tasas y requerimientos de préstamos. Demo funcional, datos ficticios.">
+<meta name="twitter:title" content="Asistente de crédito bancario — Demo">
+<meta name="twitter:description" content="Procesos, tasas y niveles de aprobación respondidos en segundos, con la fuente. Demo funcional, datos ficticios.">
 <meta name="twitter:image" content="https://ricardochen.github.io/banco-demo-credito/og-image.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,8 +52,8 @@
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
     <div>
       <p class="text-[11px] font-bold uppercase tracking-[.15em] text-[#157347]">Banco Demo · Panamá · Uso interno</p>
-      <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mt-1">Agente interno de crédito</h1>
-      <p class="text-sm text-[#475467] mt-1">Consulta procesos, tasas y requerimientos como lo haría un colaborador del banco.</p>
+      <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mt-1">El asistente de crédito de tu equipo bancario</h1>
+      <p class="text-sm text-[#475467] mt-1">Responde cualquier consulta de crédito en segundos.</p>
     </div>
     <div class="flex items-center gap-2 text-[12px]">
       <span class="px-3 py-1.5 rounded-full bg-white border border-[#E3E8EF] font-semibold">Hipotecario</span>
@@ -87,6 +87,10 @@
     <!-- PANEL LATERAL -->
     <aside class="space-y-3">
       <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
+        <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">El problema que resuelve</p>
+        <p class="text-[13px] text-[#475467] leading-relaxed">Procesos, tasas y niveles de aprobación viven en manuales que nadie lee y en la memoria de tres personas. El asistente los responde en segundos, con la fuente.<br><br>Menos tiempo en consultas internas, <span class="font-semibold text-[#0B1220]">menos horas de capacitación repetida</span>.</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-[#E3E8EF] p-4">
         <p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#157347] mb-2">Prueba con un caso</p>
         <div class="flex flex-wrap gap-2" id="chips">
           <button class="chip" type="button">Cliente gana 1,500, ¿cuánto hipotecario?</button>
@@ -119,7 +123,7 @@ const log = document.getElementById('log');
 const form = document.getElementById('form');
 const input = document.getElementById('input');
 
-const GREETING = 'Hola. Soy el asistente interno de Riesgo y Crédito. Puedes preguntarme por tasas, documentos, plazos o por quién aprueba un monto. Manejo hipotecario, consumo, auto y PYME. ¿Qué caso tienes?';
+const GREETING = 'Hola. Soy el asistente de crédito de tu equipo. Puedes preguntarme por tasas, documentos, plazos o por quién aprueba un monto. Manejo hipotecario, consumo, auto y PYME. ¿Qué caso tienes?';
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmt(raw){
